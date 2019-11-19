@@ -39,13 +39,12 @@ Denver_data <- homicide_data_set
 ```{r zip codes}
 #plot by zip codes
 
-
 denver_zipcodes <- zctas(cb=TRUE,starts_with=c("802"),class="sf")
 plot(denver_zipcodes)
 ```
 
 ```{r race}
-
+#filter by race
 race <- Denver_data %>%
   group_by(victim_race) %>%
   mutate(count=n()) %>%
@@ -56,12 +55,13 @@ race
 ```
 #Create Map
 ```{r map}
-
+#set Denver with crs code
 denver_crs <- race%>%
   filter(!is.na(lat))%>%
   st_as_sf(coords=c("lon","lat")) %>%
   st_set_crs(4269)
 
+#plot
 ggplot()+
   geom_sf(data = denver_zipcodes,color= "lightgray")+
   geom_sf(data = denver_crs,aes(color=factor(victim_race)))
