@@ -5,16 +5,66 @@ date: "11/18/2019"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup,include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-#load in the homicide data set, view, filer by denver and rename
-library(readr)
 library(tidyverse)
+library(reshape2)
+library(readr)
+library(forcats)
+library(tigris)
+library(sf)
+
+library(tibble)
+library(ggplot2)
+library(maps)
+
+```
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,options(tigris_use_cache = TRUE))
+
+#load in the homicide data set, view, filer by denver
+
 homicide_data_set <- read.csv("data_HW5/homicide-data.csv") %>%
-  filter(city== "Denver")
+  filter(city== "Denver")%>%
+  select(lat,lon, disposition,victim_race)
+
 Denver_data <- homicide_data_set
 
 ```
 
 
+```{r zip codes}
+#plot by zip codes
+
+
+denver_zipcodes <- zctas(cb=TRUE,starts_with=c("802"),class="sf")
+plot(denver_zipcodes)
+```
+
+```{r race}
+
+race <- Denver_data %>%
+  group_by(victim_race) %>%
+  mutate(count=n()) %>%
+  arrange(desc(count)) %>%
+  ungroup() %>%
+  filter(victim_race==c("Black","White","Hispanic"))
+race
+```
+#Create Map
+```{r map}
+
+denver_crs <- race%>%
+  filter(!is.na(lat))%>%
+  st_as_sf(coords=c("lon","lat")) %>%
+  st_set_crs(4269)
+
+ggplot()+
+  geom_sf(data = denver_zipcodes,color= "lightgray")+
+  geom_sf(data = denver_crs,aes(color=factor(victim_race)))
+
+
+```
