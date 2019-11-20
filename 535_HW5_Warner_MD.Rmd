@@ -2,7 +2,7 @@
 title: "535_HW5"
 author: "Shayna Warner"
 date: "11/18/2019==
-output: html_document
+output: pdf
 ---
 
 ```{r setup,include=FALSE}
@@ -54,7 +54,7 @@ race <- Denver_data %>%
 race
 ```
 #Create Map
-```{r map}
+```{r map,fig.width=30}
 #set Denver with crs code
 denver_crs <- race%>%
   filter(!is.na(lat))%>%
@@ -75,13 +75,15 @@ denver_disp
 ```
 ```
 
-```{r}
+```{r, fig.width=30}
 #map by homicide areas in the city, solved vs unsolved
 map<- ggplot()+
   geom_sf(data = denver_zipcodes,color= "lightgray")+
   geom_sf(data = denver_disp,aes(color=factor(victim_race)),show.legend='point')+
   facet_wrap(~disposition,ncol=1)+
-  ggtitle("Homicide cases in Denver, Co")
+  ggtitle("Homicide cases in Denver, Co")+
+  labs(x="Longitude",y="Latitude")
+
 
 map
 ```
