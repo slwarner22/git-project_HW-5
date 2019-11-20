@@ -76,14 +76,15 @@ denver_disp
 ```
 
 ```{r, fig.width=30}
-#map by homicide areas in the city, solved vs unsolved
+#map by homicide areas in the city zip codes, faceted by solved vs unsolved,victim race
 map<- ggplot()+
   geom_sf(data = denver_zipcodes,color= "lightgray")+
   geom_sf(data = denver_disp,aes(color=factor(victim_race)),show.legend='point')+
   facet_wrap(~disposition,ncol=1)+
   ggtitle("Homicide cases in Denver, Co")+
   labs(x="Longitude",y="Latitude")+
-  theme(axis.text.x=element_text(angle=90,hjust=1))
+  theme(axis.text.x=element_text(angle=90,hjust=1))+
+  labs(colour="Victim Race")
 
 
 map
