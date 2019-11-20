@@ -32,7 +32,8 @@ homicide_data_set <- read.csv("data_HW5/homicide-data.csv") %>%
   select(lat,lon, disposition,victim_race)
 
 Denver_data <- homicide_data_set
-
+view(Denver_data)
+nrow(Denver_data)
 ```
 
 
@@ -61,12 +62,19 @@ denver_crs <- race%>%
   st_as_sf(coords=c("lon","lat")) %>%
   st_set_crs(4269)
 
-#plot
+#map by homicide areas in the city
 ggplot()+
   geom_sf(data = denver_zipcodes,color= "lightgray")+
   geom_sf(data = denver_crs,aes(color=factor(victim_race)))
 
 
 #
+
+```
+```{r}
+#facets for unsolved vs solved with different colors to show races with highest# homicides for city
+Denver_data %>%
+  dplyr::mutate(disposition=forcats::fct_lump(disposition,n=2)) %>%
+  dplyr::count(disposition)
 
 ```
