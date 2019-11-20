@@ -2,7 +2,7 @@
 title: "535_HW5"
 author: "Shayna Warner"
 date: "11/18/2019==
-output: pdf
+output: pdf_document
 ---
 
 ```{r setup,include=FALSE}
@@ -82,7 +82,8 @@ map<- ggplot()+
   geom_sf(data = denver_disp,aes(color=factor(victim_race)),show.legend='point')+
   facet_wrap(~disposition,ncol=1)+
   ggtitle("Homicide cases in Denver, Co")+
-  labs(x="Longitude",y="Latitude")
+  labs(x="Longitude",y="Latitude")+
+  theme(axis.text.x=element_text(angle=90,hjust=1))
 
 
 map
