@@ -1,7 +1,7 @@
 ---
 title: "535_HW5"
 author: "Shayna Warner"
-date: "11/18/2019"
+date: "11/18/2019==
 output: html_document
 ---
 
@@ -32,7 +32,6 @@ homicide_data_set <- read.csv("data_HW5/homicide-data.csv") %>%
   select(lat,lon, disposition,victim_race)
 
 Denver_data <- homicide_data_set
-view(Denver_data)
 nrow(Denver_data)
 ```
 
@@ -65,23 +64,27 @@ denver_crs <- race%>%
 
 ```{r}
 #seperate into solved vs unsolved
-
+denver_disp <- denver_crs %>%
+  mutate(disposition= factor(disposition,levels = c("Closed without arrest",
+                                                    "Closed by arrest",
+                                                    "Open/No arrest"),
+                             labels=c("unsolved","unsolved","solved")))
+denver_disp
+                               
+                               
+```
 ```
 
 ```{r}
-#map by homicide areas in the city
-ggplot()+
+#map by homicide areas in the city, solved vs unsolved
+map<- ggplot()+
   geom_sf(data = denver_zipcodes,color= "lightgray")+
-  geom_sf(data = denver_crs,aes(color=factor(victim_race)))
+  geom_sf(data = denver_disp,aes(color=factor(victim_race)),show.legend='point')+
+  facet_wrap(~disposition,ncol=1)+
+  ggtitle("Homicide cases in Denver, Co")
 
-
-#
-
+map
 ```
-```{r}
-#facets for unsolved vs solved with different colors to show races with highest# homicides for city
-Denver_data %>%
-  dplyr::mutate(disposition=forcats::fct_lump(disposition,n=2)) %>%
-  dplyr::count(disposition)
+
 
 ```
