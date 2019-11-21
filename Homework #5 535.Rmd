@@ -1,0 +1,93 @@
+---
+title: 'Homework #5 535'
+author: "Shayna Warner"
+date: "11/21/2019"
+output:
+  word_document: default
+  html_document: default
+---
+#Packages to load and set global options
+```{r setup,include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, options(tigris_use_cache = TRUE))
+#load the appropriate libraries
+library(tidyverse)
+library(reshape2)
+library(readr)
+library(forcats)
+library(tigris)
+library(sf)
+
+library(tibble)
+library(ggplot2)
+
+
+```
+
+
+#Load in Homicide data set
+```{r}
+#load in data set, filter by city, select columns, rename 
+homicide_data <- read.csv("data_HW5/homicide-data.csv") %>%
+  filter(city=="Denver") %>%
+  select(lat,lon,disposition,victim_race)
+Denver_data <- homicide_data
+```
+
+#Plot by zipcodes
+```{r zip codes}
+#plot by zip codes
+
+denver_zipcodes <- zctas(cb=TRUE,starts_with=c("802"),class="sf")
+plot(denver_zipcodes)
+    
+``` 
+
+#Filter by race
+```{r race}
+#filter by race
+race <- Denver_data %>%
+  group_by(victim_race) %>%
+  mutate(count=n()) %>%
+  arrange(desc(count)) %>%
+  ungroup() %>%
+  filter(victim_race==c("Black","White","Hispanic"))
+race
+```
+
+#Set Denver with crs for zips
+```{r map,fig.width=30}
+#set Denver with crs code for zips
+denver_crs <- race%>%
+  filter(!is.na(lat))%>%
+  st_as_sf(coords=c("lon","lat")) %>%
+  st_set_crs(4269)
+```
+
+#Seperate into solved vs unsolved
+```{r}
+#seperate into solved vs unsolved and rename accordingly
+denver_disp <- denver_crs %>%
+  mutate(disposition= factor(disposition,levels = c("Closed without arrest",
+                                                    "Closed by arrest",
+                                                    "Open/No arrest"),
+                             labels=c("unsolved","unsolved","solved")))
+denver_disp
+                               
+                               
+
+```
+
+#Final map
+```{r}
+map<- ggplot()+
+  geom_sf(data = denver_zipcodes,color= "lightgray")+
+  geom_sf(data = denver_disp,aes(color=factor(victim_race)),show.legend='point')+
+  facet_wrap(~disposition,ncol=1)+
+  ggtitle("Homicide cases in Denver, Co")+
+  labs(x="Longitude",y="Latitude")+
+  theme(axis.text.x=element_text(angle=90,hjust=1))+
+  labs(colour="Victim Race")
+
+
+map
+```
